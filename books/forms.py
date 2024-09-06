@@ -13,12 +13,6 @@ class BookCreateForm(ModelForm):
 
 
 class BookEditForm(BookCreateForm):
-    title = CharField(required=False, widget=TextInput())
-    author = CharField(required=False, widget=TextInput())
-    price = CharField(required=False, widget=TextInput())
-
-
-class BookEditForm(BookCreateForm):
     title  = CharField(required=False, widget=TextInput(attrs={"class":"form-control-sm form-control"}))
     author = CharField(required=False, widget=TextInput(attrs={"class":"form-control-sm form-control"}))
     price  = CharField(required=False, widget=TextInput(attrs={"class":"form-control-sm form-control"}))
