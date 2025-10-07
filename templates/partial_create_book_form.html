@@ -1,0 +1,25 @@
+
+                    <form class="form-inline"
+                          hx-post="{% url 'create_book' %}"
+                          hx-target="#book-list"
+                          hx-swap="beforeend"
+                          hx-on:htmx:after-request="if(event.detail.xhr.status === 200) this.reset()">
+                        <div class="row">
+                            <div class="col">
+                                {{ form.title }}
+                            </div>
+
+                            <div class="col">
+                                {{ form.author }}
+                            </div>
+
+                            <div class="col">
+                                {{ form.price }}
+                            </div>
+
+                            <div class="col">
+                                <!-- Кнопка "Add book" -->
+                                <button type="submit" class="disbtn btn btn-primary">Add book</button>
+                            </div>
+                        </div>
+                    </form>

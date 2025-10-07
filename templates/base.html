@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Books</title>
+        <link href="{% static 'base.css' %}"
+              rel="stylesheet" >
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+              crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+              rel="stylesheet">
+    </head>
+
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <!-- Форма для добавления новой книги -->
+                    {% include "partial_create_book_form.html" %}
+                    <!-- Таблица книг -->
+                    <table class="table table-bordered mt-5">
+                        <thead id="table-head">
+                            <tr>
+                            <!-- Заголовки столбцов таблицы -->
+
+                                <!-- Заголовок номера книги -->
+                                <th scope="col" style="width: 10%" class="text-center">
+                                    <small>
+                                        No.
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='id' direction='descend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                        <i class="table-icon bi bi-arrow-down-square"></i></a>
+                                        <a href=""
+                                           class="disabled-sort-button"
+                                           hx-get="{% url 'book_list_sort' filter='id' direction='ascend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-up-square"></i></a>
+                                    </small>
+                                </th>
+
+                                <!-- Заголовок названия книги -->
+                                <th scope="col" style="width: 26%" class="text-center">
+                                    <small>
+                                        Title
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='title' direction='descend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-down-square"></i></a>
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='title' direction='ascend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-up-square"></i></a>
+                                    </small>
+                                </th>
+
+                                <!-- Заголовок автора книги -->
+                                <th scope="col" style="width: 26%" class="text-center">
+                                    <small>
+                                        Author
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='author' direction='descend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-down-square"></i></a>
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='author' direction='ascend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-up-square"></i></a>
+                                    </small>
+                                </th>
+
+                                <!-- Заголовок цены книги -->
+                                <th scope="col" style="width: 11%" class="text-center">
+                                    <small>
+                                        Price ($)
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='price' direction='descend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-down-square"></i></a>
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='price' direction='ascend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-up-square"></i></a>
+                                    </small>
+                                </th>
+
+                                <!-- Заголовок статуса книги -->
+                                <th scope="col" style="width: 11%" class="text-center">
+                                    <small>
+                                        Status
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='read' direction='descend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-down-square"></i></a>
+                                        <a href=""
+                                           hx-get="{% url 'book_list_sort' filter='read' direction='ascend' %}"
+                                           hx-target="#book-list"
+                                           hx-swap="innerHTML">
+                                           <i class="table-icon bi bi-arrow-up-square"></i></a>
+                                    </small>
+                                </th>
+
+                                <!-- Заголовок кнопок действия -->
+                                <th scope="col" style="width: 16%" class="text-center">
+                                    <small>
+                                        Actions
+                                    </small>
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <!-- Список книг -->
+                        <tbody id="book-list">
+                        {% include "partial_book_list.html" %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script src="https://unpkg.com/htmx.org@2.0.7"></script>
+        <script>
+            function cngElementsAttr (cls, atr, val) {
+                for (const elmt of document.getElementsByClassName(cls)) {
+                    elmt[atr] = val;
+                }
+            }
+            
+            document.getElementById('book-list').addEventListener('htmx:afterRequest', (event) => {
+                const eltClsList = event.detail.requestConfig.elt.classList;
+                const status = event.detail.xhr.status;
+                if (eltClsList.contains('editbtn') && status === 200) {
+                    cngElementsAttr('disbtn', 'disabled', true);
+                }
+                if (eltClsList.contains('svcnbtn') && status === 200) {
+                    cngElementsAttr('disbtn', 'disabled', false);
+                }
+            });
+            
+            document.getElementById('table-head').addEventListener('htmx:afterRequest', (event) => {
+                const status = event.detail.xhr.status;
+                if (status === 200) {
+                    document.querySelector('.disabled-sort-button').classList.remove('disabled-sort-button');
+                    event.detail.requestConfig.elt.classList.add('disabled-sort-button');
+                }
+
+            });
+        </script>
+    </body>
+</html>
